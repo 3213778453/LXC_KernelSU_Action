@@ -195,6 +195,7 @@ jobs:
     
         # 设置 AS 变量为 clang，以确保使用 clang 的汇编器
         export AS=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/google_clang/clang-r383902b-11.0.2/bin/clang
+        which as
         # 使用 Clang 作为汇编器，检查其版本
         as --version
         # 输出工具链路径和版本
