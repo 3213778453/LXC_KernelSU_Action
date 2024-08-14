@@ -61,6 +61,25 @@ jobs:
       with:
         swap-size-gb: 10
 
+
+    - name: Install Python 2.7 and Pip
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python2.7
+        
+        # 下载并安装 Python 2 的 pip
+        curl -sS https://bootstrap.pypa.io/pip/2.7/get-pip.py | sudo python2.7
+
+        # 设置 Python 2.7 为默认 Python 版本
+        sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
+        sudo update-alternatives --set python /usr/bin/python2.7
+
+    - name: Verify Python version
+      run: |
+        python --version
+        python2 --version
+        pip --version  # 验证 pip 是否安装成功
+
     - name: Setup build kernel environment
       run: |
         echo "BUILD_TIME=$(TZ=Asia/Shanghai date "+%Y%m%d%H%M")" >> $GITHUB_ENV
