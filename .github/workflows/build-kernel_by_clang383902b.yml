@@ -233,7 +233,7 @@ jobs:
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
     
         # 更新 PATH 环境变量以包含 clang 工具链路径
-        export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/google_clang/clang-r383902b-11.0.2/bin:$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/google_gcc/aarch64-linux-android-4.9/bin:$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/google_gcc/arm-linux-androideabi-4.9/bin:$PATH
+        export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/google_clang/clang-r383902b-11.0.2/bin:$GITHUB_WORKSPACE/kernel_workspace/google_gcc/aarch64-linux-android-4.9/bin:$GITHUB_WORKSPACE/kernel_workspace/google_gcc/arm-linux-androideabi-4.9/bin:$PATH
     
         # 确认 clang 工具链的路径和版本
         which clang
