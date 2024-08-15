@@ -97,7 +97,30 @@ jobs:
         cd $GITHUB_WORKSPACE/kernel_workspace
         mkdir clang-aosp
         git clone https://github.com/tomxi1997/Toolchain.git clang-aosp --depth=1
-          
+
+
+    - name: Download Google_gcc-4.9
+      run: |
+        # 进入工作目录
+        cd $GITHUB_WORKSPACE/kernel_workspace
+    
+        # 创建存放 GCC 工具链的目录
+        mkdir -p google_gcc-4.9
+    
+        # 进入该目录
+        cd google_gcc-4.9
+    
+        # 下载和解压 arm-linux-androideabi-4.9 工具链
+        wget https://gitlab.com/tomxi1997/google_gcc-4.9/-/raw/main/arm-linux-androideabi-4.9.tar.xz
+        tar -xf arm-linux-androideabi-4.9.tar.xz
+    
+        # 下载和解压 aarch64-linux-android-4.9 工具链
+        wget https://gitlab.com/tomxi1997/google_gcc-4.9/-/raw/main/aarch64-linux-android-4.9.tar.xz
+        tar -xf aarch64-linux-android-4.9.tar.xz
+    
+        # 删除下载的 tar.xz 文件
+        rm *.xz
+
         
 
     - name: Download mkbootimg tools
