@@ -235,16 +235,6 @@ jobs:
         # 更新 PATH 环境变量以包含 clang 工具链路径
         export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/google_clang/clang-r383902b-11.0.2/bin:$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/google_gcc/aarch64-linux-android-4.9/bin:$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/google_gcc/arm-linux-androideabi-4.9/bin:$PATH
     
-        # 设置编译器及工具链
-        export CC=clang
-        export CXX=clang++
-        export LD=ld.lld
-        export AR=llvm-ar
-        export OBJCOPY=llvm-objcopy
-        export OBJDUMP=llvm-objdump
-        export READELF=llvm-readelf
-        export AS=llvm-as  # 设置汇编器为 llvm-as
-    
         # 确认 clang 工具链的路径和版本
         which clang
         clang --version
