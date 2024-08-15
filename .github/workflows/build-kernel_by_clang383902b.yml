@@ -63,25 +63,6 @@ jobs:
       with:
         swap-size-gb: 10
 
-    - name: Install Python 2.7 and Pip
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y python2.7
-        
-        # 下载并安装 Python 2 的 pip
-        curl -sS https://bootstrap.pypa.io/pip/2.7/get-pip.py | sudo python2.7
-
-        # 设置 Python 2.7 为默认 Python 版本
-        sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
-        sudo update-alternatives --set python /usr/bin/python2.7
-
-    - name: Verify Python version
-      run: |
-        python --version
-        python2 --version
-        pip --version  # 验证 pip 是否安装成功
-        
-
     - name: Setup build kernel environment
       run: |
         echo "BUILD_TIME=$(TZ=Asia/Shanghai date "+%Y%m%d%H%M")" >> $GITHUB_ENV
@@ -97,30 +78,7 @@ jobs:
         cd $GITHUB_WORKSPACE/kernel_workspace
         mkdir clang-aosp
         git clone https://github.com/tomxi1997/Toolchain.git clang-aosp --depth=1
-
-
-    - name: Download Google_gcc-4.9
-      run: |
-        # 进入工作目录
-        cd $GITHUB_WORKSPACE/kernel_workspace
-    
-        # 创建存放 GCC 工具链的目录
-        mkdir -p google_gcc-4.9
-    
-        # 进入该目录
-        cd google_gcc-4.9
-    
-        # 下载和解压 arm-linux-androideabi-4.9 工具链
-        wget https://gitlab.com/tomxi1997/google_gcc-4.9/-/raw/main/arm-linux-androideabi-4.9.tar.xz
-        tar -xf arm-linux-androideabi-4.9.tar.xz
-    
-        # 下载和解压 aarch64-linux-android-4.9 工具链
-        wget https://gitlab.com/tomxi1997/google_gcc-4.9/-/raw/main/aarch64-linux-android-4.9.tar.xz
-        tar -xf aarch64-linux-android-4.9.tar.xz
-    
-        # 删除下载的 tar.xz 文件
-        rm *.xz
-
+          
         
 
     - name: Download mkbootimg tools
@@ -231,51 +189,19 @@ jobs:
     - name: Build kernel
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
-    
-        # 更新 PATH 环境变量以包含 clang 工具链路径
-        export PATH=$GITHUB_WORKSPACE/kernel_workspace/google_gcc/aarch64-linux-android-4.9/bin:$GITHUB_WORKSPACE/kernel_workspace/google_gcc/arm-linux-androideabi-4.9/bin:$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/google_clang/clang-r383902b-11.0.2/bin:$PATH
-        echo $PATH
-        # 确认 clang 工具链的路径和版本
-        echo "Checking clang tools..."
-        which clang
-        clang --version
-        which llvm-ar
-        llvm-ar --version
-        which ld.lld
-        ld.lld --version
-        which llvm-objcopy
-        llvm-objcopy --version
-        which llvm-objdump
-        llvm-objdump --version
-        which llvm-readelf
-        llvm-readelf --version
-        which llvm-as
-        llvm-as --version
-    
-        echo "Checking gcc tools..."
-        which gcc
-        gcc --version
-        which g++
-        g++ --version
-    
+        export PATH=$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/google_clang/clang-r383902b-11.0.2/bin:$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/google_gcc/aarch64-linux-android-4.9/bin:$GITHUB_WORKSPACE/kernel_workspace/clang-aosp/google_gcc/arm-linux-androideabi-4.9/bin:$PATH
         export KBUILD_BUILD_HOST=Github-Action
         export KBUILD_BUILD_USER=$(echo ${{ github.actor }} | tr A-Z a-z)
         if [ ! -z ${{ env.KSU_EXPECTED_SIZE }} ] && [ ! -z ${{ env.KSU_EXPECTED_HASH }} ]; then
           export KSU_EXPECTED_SIZE=${{ env.KSU_EXPECTED_SIZE }}
           export KSU_EXPECTED_HASH=${{ env.KSU_EXPECTED_HASH }}
-        fi
-    
-        # 执行编译
-        make -j$(nproc --all) O=out ARCH=${{ env.ARCH }} ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- ${{ env.KERNEL_CONFIG }}
-
-        # 使用 ccache 如果启用了
+        fi 
+        make -j$(nproc --all) CC=clang O=out ARCH=${{ env.ARCH }} ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- ${{ env.KERNEL_CONFIG }}
         if [ ${{ env.ENABLE_CCACHE }} = true ]; then
-            make -j$(nproc --all) CC="ccache clang" O=out ARCH=${{ env.ARCH }} ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi-
+            make -j$(nproc --all) CC="ccache clang" O=out ARCH=${{ env.ARCH }} ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- 
         else
-            make -j$(nproc --all) CC=clang O=out ARCH=${{ env.ARCH }} ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi-
+            make -j$(nproc --all) CC=clang O=out ARCH=${{ env.ARCH }} ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi-  
         fi
-
-
 
     - name: Check a kernel output files
       run: |
@@ -299,7 +225,7 @@ jobs:
       if: env.CHECK_FILE_IS_OK == 'true'
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace
-        git clone https://github.com/Flyme66/AnyKernel3
+        git clone https://github.com/osm0sis/AnyKernel3
         sed -i 's/do.devicecheck=1/do.devicecheck=0/g' AnyKernel3/anykernel.sh
         sed -i 's!block=/dev/block/platform/omap/omap_hsmmc.0/by-name/boot;!block=auto;!g' AnyKernel3/anykernel.sh
         sed -i 's/is_slot_device=0;/is_slot_device=auto;/g' AnyKernel3/anykernel.sh
