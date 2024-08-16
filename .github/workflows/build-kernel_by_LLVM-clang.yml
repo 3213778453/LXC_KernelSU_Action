@@ -302,6 +302,22 @@ jobs:
         key: build-kernel-${{ env.DEVICE }}${{ env.UPLOADNAME }}
         max-size: 2G
 
+
+    - name: List files in kernel_workspace
+      run: |
+        cd $GITHUB_WORKSPACE/kernel_workspace
+        ls -l
+    
+    - name: List files in android-kernel
+      run: |
+        cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
+        ls -l
+    
+    - name: Verify CFLAGS
+      run: |
+        echo $CFLAGS
+
+
     - name: Build kernel
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
