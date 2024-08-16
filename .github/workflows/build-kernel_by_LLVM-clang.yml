@@ -302,20 +302,25 @@ jobs:
         key: build-kernel-${{ env.DEVICE }}${{ env.UPLOADNAME }}
         max-size: 2G
 
-
-    - name: List files in kernel_workspace
-      run: |
-        cd $GITHUB_WORKSPACE/kernel_workspace
-        ls -l
     
-    - name: List files in android-kernel
+    - name: Setup Kbuild Configuration
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
-        ls -l
-    
-    - name: Verify CFLAGS
-      run: |
-        echo $CFLAGS
+        
+        # 确保 Kbuild 文件存在并添加必要的配置
+        if [ -f Kbuild ]; then
+          # 如果 Kbuild 文件已存在，则追加配置
+          echo '# 为特定的目标文件添加 CFLAGS' >> Kbuild
+          echo 'CFLAGS_drivers_platform_msm_gsi.o := -fPIC' >> Kbuild
+        else
+          # 如果 Kbuild 文件不存在，则创建文件并添加配置
+          echo '# 添加驱动的路径' > Kbuild
+          echo 'obj-y += drivers/platform/msm/' >> Kbuild
+          echo '' >> Kbuild
+          echo '# 为特定的目标文件添加 CFLAGS' >> Kbuild
+          echo 'CFLAGS_drivers_platform_msm_gsi.o := -fPIC' >> Kbuild
+        fi
+
 
 
     - name: Build kernel
