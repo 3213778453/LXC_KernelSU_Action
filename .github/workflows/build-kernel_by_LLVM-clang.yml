@@ -303,25 +303,6 @@ jobs:
         max-size: 2G
 
     
-    - name: Setup Kbuild Configuration
-      run: |
-        cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
-        
-        # 确保 Kbuild 文件存在并添加必要的配置
-        if [ -f Kbuild ]; then
-          # 如果 Kbuild 文件已存在，则追加配置
-          echo '# 为特定的目标文件添加 CFLAGS' >> Kbuild
-          echo 'CFLAGS_drivers_platform_msm_gsi.o := -fPIC' >> Kbuild
-        else
-          # 如果 Kbuild 文件不存在，则创建文件并添加配置
-          echo '# 添加驱动的路径' > Kbuild
-          echo 'obj-y += drivers/platform/msm/' >> Kbuild
-          echo '' >> Kbuild
-          echo '# 为特定的目标文件添加 CFLAGS' >> Kbuild
-          echo 'CFLAGS_drivers_platform_msm_gsi.o := -fPIC' >> Kbuild
-        fi
-
-
 
     - name: Build kernel
       run: |
@@ -329,7 +310,6 @@ jobs:
         export PATH=$GITHUB_WORKSPACE/kernel_workspace/llvm-clang/bin:$GITHUB_WORKSPACE/kernel_workspace/binutils/bin:$PATH
         export KBUILD_BUILD_HOST=Github-Action
         export KBUILD_BUILD_USER=$(echo ${{ github.actor }} | tr A-Z a-z)
-        export CFLAGS="$CFLAGS -fPIC"
 
         if [ ! -z ${{ env.KSU_EXPECTED_SIZE }} ] && [ ! -z ${{ env.KSU_EXPECTED_HASH }} ]; then
           export KSU_EXPECTED_SIZE=${{ env.KSU_EXPECTED_SIZE }}
