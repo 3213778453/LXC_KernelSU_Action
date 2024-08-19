@@ -307,9 +307,6 @@ jobs:
     - name: Build kernel
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
-        grep -r "MODULES =" $GITHUB_WORKSPACE/kernel_workspace/android-kernel
-        grep -r "OVERLAY_FS =" $GITHUB_WORKSPACE/kernel_workspace/android-kernel
-
         export PATH=$GITHUB_WORKSPACE/kernel_workspace/llvm-clang/bin:$GITHUB_WORKSPACE/kernel_workspace/binutils/bin:$PATH
         export KBUILD_BUILD_HOST=Github-Action
         export KBUILD_BUILD_USER=$(echo ${{ github.actor }} | tr A-Z a-z)
