@@ -302,8 +302,20 @@ jobs:
         key: build-kernel-${{ env.DEVICE }}${{ env.UPLOADNAME }}
         max-size: 2G
 
-    
 
+    - name: Apply -fPIC to KBUILD_CFLAGS
+      run: |
+        KERNEL_SOURCE_DIR="$GITHUB_WORKSPACE/kernel_workspace/android-kernel"
+
+        # 在每个 Kbuild 文件中添加 -fPIC
+        find "$KERNEL_SOURCE_DIR" -name "Kbuild" -type f -exec sed -i '/^KBUILD_CFLAGS/ s/$/ -fPIC/' {} +
+
+        # 如果 KBUILD_CFLAGS 未定义，则添加 KBUILD_CFLAGS += -fPIC
+        find "$KERNEL_SOURCE_DIR" -name "Kbuild" -type f -exec grep -L "^KBUILD_CFLAGS" {} \; -exec sed -i '1i KBUILD_CFLAGS += -fPIC' {} +
+
+        # 在每个 Makefile 文件中添加 -fPIC
+        find "$KERNEL_SOURCE_DIR" -name "Makefile" -type f -exec sed -i '/^CFLAGS/ s/$/ -fPIC/' {} +
+    
     - name: Build kernel
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
