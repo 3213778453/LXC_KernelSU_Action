@@ -310,6 +310,10 @@ jobs:
         export PATH=$GITHUB_WORKSPACE/kernel_workspace/llvm-clang/bin:$GITHUB_WORKSPACE/kernel_workspace/binutils/bin:$PATH
         export KBUILD_BUILD_HOST=Github-Action
         export KBUILD_BUILD_USER=$(echo ${{ github.actor }} | tr A-Z a-z)
+        export KBUILD_CFLAGS += -fPIC
+        make V=1
+
+
 
         if [ ! -z ${{ env.KSU_EXPECTED_SIZE }} ] && [ ! -z ${{ env.KSU_EXPECTED_HASH }} ]; then
           export KSU_EXPECTED_SIZE=${{ env.KSU_EXPECTED_SIZE }}
