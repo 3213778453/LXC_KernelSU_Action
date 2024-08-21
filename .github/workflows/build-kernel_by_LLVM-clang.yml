@@ -57,6 +57,9 @@ jobs:
         echo "TCLANG_BRANCH=$(cat $CONFIG_ENV | grep -w "TCLANG_BRANCH" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
         echo "LLVM_CLANG_VERSION=$(cat $CONFIG_ENV | grep -w "LLVM_CLANG_VERSION" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
         echo "ELECTRON_BINUTILS_VERSION1=$(cat $CONFIG_ENV | grep -w "ELECTRON_BINUTILS_VERSION1" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
+        
+        # 添加 -fPIC 到 KBUILD_CFLAGS
+        echo "KBUILD_CFLAGS=\"\$KBUILD_CFLAGS -fPIC\"" >> $GITHUB_ENV
 
     - name: Set swap to 10G
       uses: pierotofy/set-swap-space@master
